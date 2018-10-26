@@ -1,0 +1,31 @@
+.MeetupAPI-SideBar {
+    background-color: white;
+    height: auto;
+    min-width: 700px;
+    border: solid;
+    padding-top: 5px;
+    }
+
+    .MeetupAPI-SideBar:hover .fa:before {
+    content: "\f054";      
+    }
+
+    .MeetupAPI-SideBar .fa:before {
+    content: "\f053";
+    font-size: large;
+    font-family: FontAwesome;
+    color: black;
+    }
+
+.MeetupBulletin {
+    padding-top:40px;
+    position: sticky;
+    right: -650px;
+    transition-property: right;
+    transition-duration: .75s;
+    height: auto;
+       
+}
+.MeetupBulletin:hover{
+    right: 0;
+}

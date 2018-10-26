@@ -1,0 +1,172 @@
+
+
+@{
+    ViewBag.Title = "MeetupAPI";
+}
+
+<div class="meetup-wraper">
+    <div class="MeetupAPI-SideBar">
+        <i class="fa"></i>
+        <h2>MeetupAPI</h2>
+
+        <div class="card">
+            <div class="card-header bg-warning text-center">
+                UPCOMING MEETUPs
+            </div>
+            <div id="events" list-group list-group-flush">
+            </div>
+        </div>
+
+        <div class="resp-table">
+            <table>
+                <tr>
+                    <th></th>
+                    <th class="table-left-pad">Date</th>
+                </tr>
+                <tr>
+                    <td>
+                        <div id="name"></div>
+                    </td>
+                    <td>
+                        <div class="table-left-pad" id="date"></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <i class="fa"></i>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script>
+
+        //Job Placement accounts' group
+        var allGroupSignedURL = [
+            'https://api.meetup.com/techacademy/events?photo-host=public&page=20&sig_id=262155129&sig=9a91a8d626615d7fe8488ceafe098b13c3df1cbb',
+            'https://api.meetup.com/AgilePDX-User-Group-Portland-Metro/events?photo-host=public&page=20&sig_id=262155129&sig=0fab37a6271a33368265477dc6686c684fc13b80',
+            'https://api.meetup.com/DesignOps-Portland/events?photo-host=public&page=20&sig_id=262155129&sig=e7a8a37611d27d2ac62e6bdf99a420c2223bacf9',
+            'https://api.meetup.com/Google-Development-Group-GDG-PDX-Meetup/events?photo-host=public&page=20&sig_id=262155129&sig=37551d316c5000bc0f0b442de509888d241140aa',
+            'https://api.meetup.com/IxDA-Portland/events?photo-host=public&page=20&sig_id=262155129&sig=f622872d8de6266c77bb8301ae0e8799b5ebe47c',
+            'https://api.meetup.com/Meetup-API-Testing/events?photo-host=public&page=20&sig_id=262155129&sig=1eb550ac51038d6bdcdd15469183ea2de4ee3a90',
+            'https://api.meetup.com/Pacific-NW-Software-Quality-Conference-PNSQC/events?photo-host=public&page=20&sig_id=262155129&sig=9d4ce9e1296eba1fd911565c2ed128d955d42ccd',
+            'https://api.meetup.com/Placemaking-in-the-Digital-Age/events?photo-host=public&page=20&sig_id=262155129&sig=73068f0efcd37320a7f28c97e663d562ea14fbe5',
+            'https://api.meetup.com/Portland-Drupal/events?photo-host=public&page=20&sig_id=262155129&sig=99cb6b42d3d736776e5fb59ab49a20628a8de77c',
+            'https://api.meetup.com/Portland-ReactJS/events?photo-host=public&page=20&sig_id=262155129&sig=069893d5e2f5b6c765bc9fe89641bde9b67f8cce',
+            'https://api.meetup.com/PSU-Distinguished-Speaker-Series-at-the-Dept-of-ETM/events?photo-host=public&page=20&sig_id=262155129&sig=22e26a741a41676a005a96493485709bcb39be76',
+            'https://api.meetup.com/alchemycodelab/events?photo-host=public&page=20&sig_id=262155129&sig=1911932731f4370efacf2b49dc60bf550777b162',
+            'https://api.meetup.com/Figma-Portland/events?photo-host=public&page=20&sig_id=262155129&sig=ddcad672881e03e38e12ba1d2bc7f14860721ba9',
+            'https://api.meetup.com/GraphQLPDX/events?photo-host=public&page=20&sig_id=262155129&sig=fad55eb3bfda96d09cc4933a0dcc9b826fd3f57d',
+            'https://api.meetup.com/JAMstack-Portland/events?photo-host=public&page=20&sig_id=262155129&sig=198fdeee9704aff648b0d99215093d9595f09373',
+            'https://api.meetup.com/New-Relic-FutureTalks-PDX/events?photo-host=public&page=20&sig_id=262155129&sig=45ea86b3fb848c5784a6ccc68a7717b112353a63',
+            'https://api.meetup.com/PDX-PHP/events?photo-host=public&page=20&sig_id=262155129&sig=5a8ae0c81d6133887a11453637fc4742b14e70f9',
+            'https://api.meetup.com/Portland-Accessibility-and-User-Experience-Meetup/events?photo-host=public&page=20&sig_id=262155129&sig=7ef13fb641a803041aa44856056de205bbf41176',
+            'https://api.meetup.com/Portland-Programmer-Network/events?photo-host=public&page=20&sig_id=262155129&sig=e2e257ddf2dc8e5fc973615853c300027203a519',
+            'https://api.meetup.com/Portland-Tech-Leadership-Meetup/events?photo-host=public&page=20&sig_id=262155129&sig=166bbafac5c9ecda5a8a589746ceaacd8a78cfb6'
+        ];
+
+        //Main function
+        getAllCurrentGroupsUpcomingEvent();
+        console.log(getAllCurrentGroupsUpcomingEvent());
+        function getAllCurrentGroupsUpcomingEvent() {
+            var allGroupsWithUpcomingEvents = [];
+            allGroupSignedURL.forEach(function (groupURL) {
+                $.ajax({
+                    type: "GET",
+                    url: groupURL,
+                    success: function (data) {
+                        if (data.data.length > 0) {
+                            filterLatestMeetUpWithSameName(data.data).forEach(function (elem) {
+                                var obj = {};
+                                obj['name'] = elem.name;
+                                obj['link'] = elem.link;
+                                obj['date'] = elem.local_date;
+                                allGroupsWithUpcomingEvents.push(obj);
+                            });
+                        }
+                    },
+                    dataType: 'jsonp',
+                });
+            });
+            return allGroupsWithUpcomingEvents;
+        }
+
+        //remove repeated events next to each other and just get the latest and returns an array of meetups
+        function filterLatestMeetUpWithSameName(arr) {
+            var newArr = [];
+            for (var i = 1; i < arr.length; i++) {
+                if (arr[i].name === arr[i - 1].name) {
+                    if ((Date.parse(arr[i].local_date) < Date.parse(arr[i - 1].local_date))) { newArr.push(arr[i]); }
+                } else {
+                    newArr.push(arr[i]);
+                }
+            }
+            return newArr;
+        }
+
+        var demoArray = [
+            { name: "Mob Programming", link: "https://www.meetup.com/AgilePDX-User-Group-Portland-Metro/events/254966471/", date: "2018-10-09" },
+            { name: "Lean Coffee in the North", link: "https://www.meetup.com/AgilePDX-User-Group-Portland-Metro/events/254742212/", date: "2018-10-21" },
+            { name: "AgilePDX Community Retrospective", link: "https://www.meetup.com/AgilePDX-User-Group-Portland-Metro/events/251971253/", date: "2018-10-29" },
+            { name: "Lean Coffee in the North", link: "https://www.meetup.com/AgilePDX-User-Group-Portland-Metro/events/254964432/", date: "2018-11-18" },
+            { name: "Hack And Help", link: "https://www.meetup.com/PDX-PHP/events/vmmmtnyxpbdb/", date: "2018-11-02" },
+            { name: "Unblocking PHP applications with message queues", link: "https://www.meetup.com/PDX-PHP/events/254890728/", date: "2018-11-20" },
+            { name: "Hack And Help", link: "https://www.meetup.com/PDX-PHP/events/vmmmtnyxqbkb/", date: "2018-12-07" },
+            { name: "Monthly Meetup", link: "https://www.meetup.com/PDX-PHP/events/bfwlbqyxqbxb/", date: "2018-12-18" },
+            { name: "Life of a Developer, Tech Talk with Cesar Jimenez", link: "https://www.meetup.com/techacademy/events/255069780/", date: "2018-10-05" },
+            { name: "Intro to Python: A Free Coding Class at The Tech Academy", link: "https://www.meetup.com/techacademy/events/254499303/", date: "2018-10-08" },
+            { name: "Intro to HTML & CSS: A Free Coding Class at The Tech Academy", link: "https://www.meetup.com/techacademy/events/sdfhfqyxnbtb/", date: "2018-10-15" },
+            { name: "Intro to Python: A Free Coding Class at The Tech Academy", link: "https://www.meetup.com/techacademy/events/vffhfqyxnbdc/", date: "2018-10-22" },
+            { name: "Intro to HTML & CSS: A Free Coding Class at The Tech Academy", link: "https://www.meetup.com/techacademy/events/sdfhfqyxnbmc/", date: "2018-10-29" },
+            { name: "Intro to Python: A Free Coding Class at The Tech Academy", link: "https://www.meetup.com/techacademy/events/vffhfqyxpbhb/", date: "2018-11-05" },
+            { name: "Intro to HTML & CSS: A Free Coding Class at The Tech Academy", link: "https://www.meetup.com/techacademy/events/sdfhfqyxpbqb/", date: "2018-11-12" },
+            { name: "Intro to Python: A Free Coding Class at The Tech Academy", link: "https://www.meetup.com/techacademy/events/vffhfqyxpbzb/", date: "2018-11-19" },
+            { name: "Intro to HTML & CSS: A Free Coding Class at The Tech Academy", link: "https://www.meetup.com/techacademy/events/sdfhfqyxpbjc/", date: "2018-11-26" },
+            { name: "Intro to Python: A Free Coding Class at The Tech Academy", link: "https://www.meetup.com/techacademy/events/vffhfqyxqbfb/", date: "2018-12-03" },
+            { name: "Intro to HTML & CSS: A Free Coding Class at The Tech Academy", link: "https://www.meetup.com/techacademy/events/sdfhfqyxqbnb/", date: "2018-12-10" },
+            { name: "Intro to Python: A Free Coding Class at The Tech Academy", link: "https://www.meetup.com/techacademy/events/vffhfqyxqbwb/", date: "2018-12-17" },
+            { name: "Intro to HTML & CSS: A Free Coding Class at The Tech Academy", link: "https://www.meetup.com/techacademy/events/sdfhfqyxqbgc/", date: "2018-12-24" },
+            { name: "Intro to Python: A Free Coding Class at The Tech Academy", link: "https://www.meetup.com/techacademy/events/vffhfqyxqbpc/", date: "2018-12-31" },
+            { name: "Intro to HTML & CSS: A Free Coding Class at The Tech Academy", link: "https://www.meetup.com/techacademy/events/sdfhfqyzcbkb/", date: "2019-01-07" },
+            { name: "Intro to Python: A Free Coding Class at The Tech Academy", link: "https://www.meetup.com/techacademy/events/vffhfqyzcbsb/", date: "2019-01-14" },
+            { name: "Intro to HTML & CSS: A Free Coding Class at The Tech Academy", link: "https://www.meetup.com/techacademy/events/sdfhfqyzcbcc/", date: "2019-01-21" },
+            { name: "Intro to Python: A Free Coding Class at The Tech Academy", link: "https://www.meetup.com/techacademy/events/vffhfqyzcblc/", date: "2019-01-28" },
+            { name: "Intro to HTML & CSS: A Free Coding Class at The Tech Academy", link: "https://www.meetup.com/techacademy/events/sdfhfqyzdbgb/", date: "2019-02-04" }
+        ];
+
+        // EACH BUILDS AN ARRAY OF ITS ASSOCIATED "NAME" OR "LINK"
+        //var nameColumn = demoArray.map(function (el) {
+        //    return el.name;
+        //});
+        //var linkColumn = demoArray.map(function (el) {
+        //    return el.link;
+        //})
+
+        // DIAGNOSTICS
+        //console.log(demoArray);
+        //console.log(JSON.stringify(demoArray));
+        //console.log(nameColumn);
+        //console.log(linkColumn);
+        //console.log(dateColumn);
+
+
+        // SEPERATES DATE FROM ARRAY, CREATES NEW ARRAY "DATECOLUMN", AND INSERTS INTO "DATE" CELL
+        var dateColumn = demoArray.map(function (el) {
+            return el.date;
+        })
+        document.getElementById("date").innerHTML = dateColumn.join("<br>");
+
+        // CREATES HREF LINK.
+        function linkEmbedder(item, index) {
+            var builtLink = ['<a href="' + item.link + '">' + item.name + '</a><br>'].join("");
+            return builtLink;
+        }
+
+        // INSERTS LINK INTO DOCUMENT
+        function linkInsertion() {
+            document.getElementById("name").innerHTML = demoArray.map(linkEmbedder).join('');
+        }
+        linkInsertion();
+
+    </script>
+   
+</div>
