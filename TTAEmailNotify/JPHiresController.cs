@@ -1,7 +1,6 @@
 
 
-[HttpPost]
-[ValidateAntiForgeryToken]
+//Send email to Portland Job Placement Director
 public async Task<ActionResult> SendEmail(MailMessage message)
 {
     string networkUser = "PLACEHOLDER@live.com";//REPLACE WITH VALID VALUE 
